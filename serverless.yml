@@ -1,0 +1,74 @@
+service: quiztopia
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: eu-north-1
+  profile: default
+  iam:
+    role: arn:aws:iam::585768151078:role/Full-acces-lambda
+  environment:
+    JWT_SECRET: "dog"
+    DYNAMODB_TABLE_QUIZZES: quizzes
+    DYNAMODB_TABLE_USERS: users
+
+functions:
+  registerUser:
+    handler: RegisterUser.registerUser
+    events:
+      - http:
+          path: /register
+          method: post
+  loginUser:
+    handler: LoginUser.loginUser
+    events:
+      - http:
+          path: /login
+          method: post
+  createQuiz:
+    handler: CreateQuiz.createQuiz
+    events:
+      - http:
+          path: /quizzes
+          method: post
+          authorizer: jwtAuthorizer
+  jwtAuthorizer:
+    handler: JwtAuthorizer.jwtAuthorizer
+  # getAllQuizzes:
+  #   handler: handler.getAllQuizzes
+  #   events:
+  #     - http:
+  #         path: /quizzes
+  #         method: get
+  # getQuizQuestions:
+  #   handler: handler.getQuizQuestions
+  #   events:
+  #     - http:
+  #         path: /quizzes/{quizId}
+  #         method: get
+  #         authorizer: jwtAuthorizer
+
+resources:
+  Resources:
+    QuizzesTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.environment.DYNAMODB_TABLE_QUIZZES}
+        AttributeDefinitions:
+          - AttributeName: quizId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: quizId
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+    UsersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.environment.DYNAMODB_TABLE_USERS}
+        AttributeDefinitions:
+          - AttributeName: userId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: userId
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
