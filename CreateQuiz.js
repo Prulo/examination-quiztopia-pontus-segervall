@@ -1,50 +1,54 @@
-module.exports.createQuiz = async (event) => {
-  console.log("Event received:", JSON.stringify(event, null, 2)); // Log the full event object
+const { db } = require("./db.js");
+const middy = require("@middy/core");
+const { validateToken } = require("./JwtAuthorizer.js");
+const { v4: uuidv4 } = require("uuid");
+const { PutCommand } = require("@aws-sdk/lib-dynamodb");
+
+const createQuiz = async (event) => {
+  if (event.error) {
+    return {
+      statusCode: event.error.statusCode,
+      body: JSON.stringify({ message: event.error.message }),
+    };
+  }
+
+  const { name } = JSON.parse(event.body);
+
+  if (!name) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ message: "Quiz name is required" }),
+    };
+  }
+
+  const params = {
+    TableName: process.env.DYNAMODB_TABLE_QUIZZES,
+    Item: {
+      quizId: uuidv4(),
+      name: name,
+      creator: event.username,
+      createdAt: new Date().toISOString(),
+    },
+  };
 
   try {
-    const { name } = JSON.parse(event.body);
-    console.log("Parsed body:", { name }); // Log the parsed body
-
-    // Check if user is attached to the event
-    if (!event.user) {
-      console.error("User not found in event:", event);
-      throw new Error("User is not authenticated");
-    }
-
-    const userId = event.user.userId; // This is where the error occurs
-    console.log("User ID:", userId); // Log userId to see if it's present
-
-    const quizId = uuidv4(); // Generate unique quizId
-
-    const quiz = {
-      quizId,
-      name,
-      userId, // Associate quiz with the logged-in user
-    };
-
-    // Attempt to save to DynamoDB
-    await docClient.send(
-      new PutCommand({
-        TableName: process.env.DYNAMODB_TABLE_QUIZZES,
-        Item: quiz,
-      })
-    );
+    await db.send(new PutCommand(params));
 
     return {
       statusCode: 201,
       body: JSON.stringify({
         message: "Quiz created successfully",
-        quizId,
+        quizId: params.Item.quizId,
       }),
     };
   } catch (error) {
-    console.error("Error creating quiz:", error.message); // Log the error
+    console.error("DynamoDB Error:", error);
     return {
       statusCode: 500,
-      body: JSON.stringify({
-        message: "Error creating quiz",
-        error: error.message,
-      }),
+      body: JSON.stringify({ message: "Could not create the quiz" }),
     };
   }
 };
+
+const handler = middy(createQuiz).use(validateToken);
+module.exports = { handler };

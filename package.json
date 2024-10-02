@@ -2,7 +2,7 @@
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.658.1",
     "@aws-sdk/lib-dynamodb": "^3.658.1",
-    "@middy/core": "^5.5.0",
+    "@middy/core": "v4.7",
     "@middy/http-error-handler": "^5.5.0",
     "@middy/http-json-body-parser": "^5.5.0",
     "bcryptjs": "^2.4.3",

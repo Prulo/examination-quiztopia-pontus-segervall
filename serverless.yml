@@ -26,14 +26,17 @@ functions:
           path: /login
           method: post
   createQuiz:
-    handler: CreateQuiz.createQuiz
+    handler: CreateQuiz.handler
     events:
       - http:
           path: /quizzes
           method: post
-          authorizer: jwtAuthorizer
-  jwtAuthorizer:
-    handler: JwtAuthorizer.jwtAuthorizer
+  addQuestionToQuiz:
+    handler: Addquest.addQuestionToQuiz
+    events:
+      - http:
+          path: /quizzes/{quizId}/questions
+          method: post
   # getAllQuizzes:
   #   handler: handler.getAllQuizzes
   #   events:
