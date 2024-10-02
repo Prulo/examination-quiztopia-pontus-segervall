@@ -26,7 +26,7 @@ const createQuiz = async (event) => {
     Item: {
       quizId: uuidv4(),
       name: name,
-      creator: event.username,
+      creator: event.userId,
       createdAt: new Date().toISOString(),
     },
   };

@@ -8,7 +8,7 @@ const docClient = DynamoDBDocumentClient.from(dynamoDBClient);
 
 const loginUser = async (event) => {
   const body = JSON.parse(event.body);
-  const { userId, password } = body; // Now using userId instead of username
+  const { userId, password } = body;
 
   if (!userId || !password) {
     return {
@@ -21,7 +21,7 @@ const loginUser = async (event) => {
     // Fetch user from DynamoDB by userId
     const params = {
       TableName: process.env.DYNAMODB_TABLE_USERS,
-      Key: { userId: userId }, // Adjust to use userId instead of username
+      Key: { userId: userId },
     };
     const data = await docClient.send(new GetCommand(params));
 
@@ -32,7 +32,6 @@ const loginUser = async (event) => {
       };
     }
 
-    // Compare password
     const isPasswordValid = bcrypt.compareSync(password, data.Item.password);
     if (!isPasswordValid) {
       return {
@@ -41,7 +40,6 @@ const loginUser = async (event) => {
       };
     }
 
-    // Generate JWT token
     const token = jwt.sign(
       { userId: data.Item.userId },
       process.env.JWT_SECRET,
