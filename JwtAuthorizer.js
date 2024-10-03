@@ -12,6 +12,7 @@ const validateToken = {
 
       const data = jwt.verify(token, process.env.JWT_SECRET);
       request.event.userId = data.userId;
+      request.event.username = data.username;
 
       console.log(data);
 

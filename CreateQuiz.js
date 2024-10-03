@@ -12,9 +12,9 @@ const createQuiz = async (event) => {
     };
   }
 
-  const { name } = JSON.parse(event.body);
+  const { quizName } = JSON.parse(event.body);
 
-  if (!name) {
+  if (!quizName) {
     return {
       statusCode: 400,
       body: JSON.stringify({ message: "Quiz name is required" }),
@@ -25,8 +25,9 @@ const createQuiz = async (event) => {
     TableName: process.env.DYNAMODB_TABLE_QUIZZES,
     Item: {
       quizId: uuidv4(),
-      name: name,
+      quizName: quizName,
       creator: event.userId,
+      creatorUsername: event.username,
       createdAt: new Date().toISOString(),
     },
   };

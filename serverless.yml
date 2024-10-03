@@ -31,25 +31,30 @@ functions:
       - http:
           path: /quizzes
           method: post
-  addQuestionToQuiz:
-    handler: Addquest.addQuestionToQuiz
-    events:
-      - http:
-          path: /quizzes/{quizId}/questions
-          method: post
-  # getAllQuizzes:
-  #   handler: handler.getAllQuizzes
+  # addQuestionToQuiz:
+  #   handler: Addquest.addQuestionToQuiz
   #   events:
   #     - http:
-  #         path: /quizzes
-  #         method: get
+  #         path: /quizzes/{quizId}/questions
+  #         method: post
+  getAllQuizzes:
+    handler: GetAllQuizzes.getAllQuizzes
+    events:
+      - http:
+          path: /quizzes
+          method: get
+  DeleteQuizzes:
+    handler: DeleteQuizzes.handler
+    events:
+      - http:
+          path: /quizzes/{quizId}
+          method: delete
   # getQuizQuestions:
   #   handler: handler.getQuizQuestions
   #   events:
   #     - http:
   #         path: /quizzes/{quizId}
   #         method: get
-  #         authorizer: jwtAuthorizer
 
 resources:
   Resources:
