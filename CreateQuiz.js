@@ -1,6 +1,6 @@
 const { db } = require("./db.js");
 const middy = require("@middy/core");
-const { validateToken } = require("./JwtAuthorizer.js");
+const { validateToken } = require("./validator/JwtAuthorizer.js");
 const { v4: uuidv4 } = require("uuid");
 const { PutCommand } = require("@aws-sdk/lib-dynamodb");
 

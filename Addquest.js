@@ -1,6 +1,6 @@
 const { db } = require("./db.js");
 const middy = require("@middy/core");
-const { validateToken } = require("./JwtAuthorizer.js");
+const { validateToken } = require("./validator/JwtAuthorizer.js");
 const { UpdateCommand, GetCommand } = require("@aws-sdk/lib-dynamodb");
 const { v4: uuidv4 } = require("uuid");
 
@@ -15,7 +15,6 @@ const addQuestionToQuiz = async (event) => {
   const { quizId } = event.pathParameters;
   const { question, answer, longitude, latitude } = JSON.parse(event.body);
 
-  // Validate input
   if (!question || !answer || !longitude || !latitude) {
     return {
       statusCode: 400,
@@ -23,7 +22,6 @@ const addQuestionToQuiz = async (event) => {
     };
   }
 
-  // Check if quiz exists and get creator information
   const quizParams = {
     TableName: process.env.DYNAMODB_TABLE_QUIZZES,
     Key: { quizId },
@@ -38,7 +36,6 @@ const addQuestionToQuiz = async (event) => {
       };
     }
 
-    // Check if the user is the creator of the quiz
     if (quiz.creator !== event.userId) {
       return {
         statusCode: 403,
@@ -48,7 +45,6 @@ const addQuestionToQuiz = async (event) => {
       };
     }
 
-    // Prepare the new question to add to the quiz
     const questionId = uuidv4();
     const newQuestion = {
       questionId,
@@ -57,7 +53,6 @@ const addQuestionToQuiz = async (event) => {
       coordinates: { longitude, latitude },
     };
 
-    // Update the quiz with the new question
     const questionParams = {
       TableName: process.env.DYNAMODB_TABLE_QUIZZES,
       Key: { quizId },
