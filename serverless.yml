@@ -31,12 +31,6 @@ functions:
       - http:
           path: /quizzes
           method: post
-  # addQuestionToQuiz:
-  #   handler: Addquest.addQuestionToQuiz
-  #   events:
-  #     - http:
-  #         path: /quizzes/{quizId}/questions
-  #         method: post
   getAllQuizzes:
     handler: GetAllQuizzes.getAllQuizzes
     events:
@@ -49,12 +43,18 @@ functions:
       - http:
           path: /quizzes/{quizId}
           method: delete
-  # getQuizQuestions:
-  #   handler: handler.getQuizQuestions
-  #   events:
-  #     - http:
-  #         path: /quizzes/{quizId}
-  #         method: get
+  getOneQuiz:
+    handler: GetOneQuiz.getQuiz
+    events:
+      - http:
+          path: /quizzes/{quizId}
+          method: get
+  addQuestionToQuiz:
+    handler: Addquest.handler
+    events:
+      - http:
+          path: /quizzes/{quizId}/questions
+          method: post
 
 resources:
   Resources:
